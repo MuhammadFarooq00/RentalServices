@@ -1,5 +1,5 @@
-import connectDB from '@/app/lib/db';  // Adjust with your path
-import RentalService from '@/app/models/RentalService';  // Adjust with your path
+import connectDB from '@/app/lib/db'; // Adjust the path according to your project structure
+import RentalService from '@/app/models/RentalService'; // Adjust the path according to your project structure
 import fs from 'fs';
 import multer from 'multer';
 import { v4 as uuid } from 'uuid';
@@ -13,23 +13,24 @@ if (!fs.existsSync(uploadDirectory)) {
 
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
-    callback(null, uploadDirectory);
+    callback(null, uploadDirectory);  // Store files in public/uploads
   },
   filename: (req, file, callback) => {
-    const id = uuid();
-    const extName = file.originalname.split(".").pop();
+    const id = uuid();  // Unique identifier for the file
+    const extName = file.originalname.split(".").pop();  // Extract file extension
     callback(null, `${id}.${extName}`);
   },
 });
 
+// Create the multer instance to handle single file upload under the field name "photo"
 const upload = multer({
   storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit for file size
 });
 
-const uploadMiddleware = upload.single("photo");  // Ensure 'photo' is the form-data key name
+const uploadMiddleware = upload.single("photo");  // The key should be "photo" for the file field
 
-// Utility function to run the middleware
+// Utility function to run the multer middleware
 const runMiddleware = (req, res, fn) => {
   return new Promise((resolve, reject) => {
     fn(req, res, (err) => {
@@ -41,11 +42,12 @@ const runMiddleware = (req, res, fn) => {
   });
 };
 
+// Define POST request handler for the rental service
 export async function POST(req) {
   await connectDB();
 
   try {
-    // Create a mock res object for Next.js API routes
+    // Create a mock response object for Next.js API route
     const resMock = {
       setHeader: () => {},
       status: () => {},
@@ -60,13 +62,14 @@ export async function POST(req) {
     // Use the runMiddleware function to process the file upload
     await runMiddleware(req, resMock, uploadMiddleware);
 
-    // Check if the file is uploaded
-    console.log("Uploaded File: ", req.file);  // Log the uploaded file for debugging
+    // Log the uploaded file for debugging
+    console.log("Uploaded File: ", req.file);
 
+    // Extract the fields from the body
     const { title, price, description, rating, location } = req.body;
-    const photo = req.file;
+    const photo = req.file;  // The file should be available here after multer processing
 
-    // Check if the image was uploaded
+    // If no photo was uploaded, return error
     if (!photo) {
       return new Response(
         JSON.stringify({ success: false, message: "Please add an image" }),
@@ -74,27 +77,26 @@ export async function POST(req) {
       );
     }
 
-    // Check if all fields are filled
+    // If any field is missing, return error
     if (!title || !price || !description || !rating || !location) {
-      // Delete the uploaded file if validation fails
+      // Delete the file if validation fails
       fs.unlink(photo.path, () => {
         console.log("File deleted due to validation failure.");
       });
-
       return new Response(
         JSON.stringify({ success: false, message: "Please fill all the fields" }),
         { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    // Create and save rental service
+    // Create and save the rental service
     const newRental = new RentalService({
       title,
       price,
       description,
       rating,
       location,
-      image: `/uploads/${photo.filename}`,  // Save the relative image path
+      image: `/uploads/${photo.filename}`,  // Save the relative file path
     });
 
     await newRental.save();
@@ -115,9 +117,9 @@ export async function POST(req) {
   }
 }
 
-// Disable body parser for Next.js API route (required for file uploads)
+// Disable bodyParser for file uploads in Next.js
 export const config = {
   api: {
-    bodyParser: false,  // Disable Next.js default body parser
+    bodyParser: false,  // Disable the default Next.js body parser to handle file upload
   },
 };
