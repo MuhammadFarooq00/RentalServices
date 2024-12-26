@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { FaBuilding, FaCar, FaTools, FaArrowRight } from 'react-icons/fa';
 import { MdHouse, MdOutlineWeekend, MdOutlineContactSupport } from 'react-icons/md';
 import Image from 'next/image';
+import { Toaster } from 'react-hot-toast';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -22,7 +23,7 @@ const HomePage = () => {
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 3000,
-    arrows: false, // Custom arrows added below
+    arrows: false,
   };
 
   const slides = [
@@ -52,13 +53,15 @@ const HomePage = () => {
       description: 'Host your events in our well-equipped venues.',
     },
   ];
+
   return (
+
+    <>
+   
     <div>
+      
 
-
-      {/* Carousel Section */}
       <section className="py-12 pt-5 bg-gray-100">
-       
         <div className="container mx-auto">
           <motion.div
             className="relative overflow-hidden rounded-lg shadow-md"
@@ -82,7 +85,6 @@ const HomePage = () => {
               ))}
             </Slider>
 
-            {/* Custom Arrows */}
             <button
               onClick={() => sliderRef.current.slickPrev()}
               className="absolute z-10 p-2 text-white transform -translate-y-1/2 bg-gray-800 rounded-full top-1/2 left-4 hover:bg-gray-700"
@@ -99,7 +101,6 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Hero Section */}
       <section className="relative px-6 py-20 mx-1 mt-5 text-white bg-gradient-to-r from-gray-700 rounded-xl to-slate-500">
         <div className="container mx-auto text-center">
           <motion.h1
@@ -118,22 +119,9 @@ const HomePage = () => {
           >
             Find the perfect rental for your needs — whether it's a home, car, or tools for your next project.
           </motion.p>
-          {/* <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            <Link
-              href="/rentals"
-              className="px-8 py-4 text-xl font-semibold transition bg-yellow-500 rounded-lg shadow-md hover:bg-yellow-600"
-            >
-              Explore Rentals
-            </Link>
-          </motion.div> */}
         </div>
       </section>
 
-      {/* Featured Services Section */}
       <section className="py-16 bg-white">
         <div className="container mx-auto text-center">
           <motion.h2
@@ -177,7 +165,6 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Call-to-Action Section */}
       <section className="py-12 text-center text-white bg-gradient-to-r from-green-400 to-blue-500">
         <motion.h2
           className="mb-4 text-4xl font-bold"
@@ -208,8 +195,6 @@ const HomePage = () => {
           </Link>
         </motion.div>
       </section>
-
-      {/* why choose us section  */}
 
       <section className="py-16 bg-gray-100">
         <div className="container mx-auto text-center">
@@ -270,8 +255,6 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* testimonials section  */}
-
       <section className="py-16 text-white bg-gradient-to-r from-slate-400 to-purple-300">
         <div className="container mx-auto text-center">
           <motion.h2
@@ -323,8 +306,6 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* how it works section  */}
-
       <section className="py-16 bg-white">
         <div className="container mx-auto text-center">
           <motion.h2
@@ -373,44 +354,9 @@ const HomePage = () => {
           </div>
         </div>
       </section>
-
-
-      {/* our partners section  */}
-
-      {/* <section className="py-16 bg-gray-100">
-  <div className="container mx-auto text-center">
-    <motion.h2
-      className="mb-8 text-4xl font-bold text-gray-800"
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      transition={{ duration: 0.8 }}
-    >
-      Our Trusted Partners
-    </motion.h2>
-    <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-6">
-      {[
-        'https://picsum.photos/600/300?random=1',
-        'https://picsum.photos/600/300?random=2',
-        'https://picsum.photos/600/300?random=3',
-        'https://picsum.photos/600/300?random=1',
-        'https://picsum.photos/600/300?random=2',
-        'https://picsum.photos/600/300?random=3',
-      ].map((logo, index) => (
-        <motion.div
-          key={index}
-          className="p-4 bg-white rounded-lg shadow-md"
-          initial={{ opacity: 0, scale: 0.8 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, delay: index * 0.2 }}
-        >
-          <img src={logo} alt={`Partner ${index + 1}`} className="h-16 mx-auto" />
-        </motion.div>
-      ))}
     </div>
-  </div>
-</section> */}
-
-    </div>
+   
+    </>
   );
 };
 

@@ -1,102 +1,58 @@
-import connectDB from '@/app/lib/db'; // Adjust the path according to your project structure
-import RentalService from '@/app/models/RentalService'; // Adjust the path according to your project structure
+import connectDB from '@/app/lib/db';
+import RentalService from '@/app/models/RentalService';
 import fs from 'fs';
-import multer from 'multer';
 import { v4 as uuid } from 'uuid';
 import path from 'path';
 
-// Configure Multer Storage
 const uploadDirectory = path.join(process.cwd(), "public/uploads");
+
 if (!fs.existsSync(uploadDirectory)) {
   fs.mkdirSync(uploadDirectory, { recursive: true });
 }
 
-const storage = multer.diskStorage({
-  destination: (req, file, callback) => {
-    callback(null, uploadDirectory);  // Store files in public/uploads
-  },
-  filename: (req, file, callback) => {
-    const id = uuid();  // Unique identifier for the file
-    const extName = file.originalname.split(".").pop();  // Extract file extension
-    callback(null, `${id}.${extName}`);
-  },
-});
-
-// Create the multer instance to handle single file upload under the field name "photo"
-const upload = multer({
-  storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit for file size
-});
-
-const uploadMiddleware = upload.single("photo");  // The key should be "photo" for the file field
-
-// Utility function to run the multer middleware
-const runMiddleware = (req, res, fn) => {
-  return new Promise((resolve, reject) => {
-    fn(req, res, (err) => {
-      if (err) {
-        return reject(err);
-      }
-      resolve();
-    });
-  });
-};
-
-// Define POST request handler for the rental service
 export async function POST(req) {
   await connectDB();
 
   try {
-    // Create a mock response object for Next.js API route
-    const resMock = {
-      setHeader: () => {},
-      status: () => {},
-      json: (data) => {
-        return new Response(JSON.stringify(data), {
-          status: data.success ? 201 : 400,
-          headers: { "Content-Type": "application/json" },
-        });
-      },
-    };
-
-    // Use the runMiddleware function to process the file upload
-    await runMiddleware(req, resMock, uploadMiddleware);
-
-    // Log the uploaded file for debugging
-    console.log("Uploaded File: ", req.file);
-
-    // Extract the fields from the body
-    const { title, price, description, rating, location } = req.body;
-    const photo = req.file;  // The file should be available here after multer processing
-
-    // If no photo was uploaded, return error
-    if (!photo) {
+    const formData = await req.formData();
+    const photoFile = formData.get("photo");
+    
+    if (!photoFile) {
       return new Response(
         JSON.stringify({ success: false, message: "Please add an image" }),
         { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    // If any field is missing, return error
+    const photoBuffer = Buffer.from(await photoFile.arrayBuffer());
+    const photoFilename = `${uuid()}${path.extname(photoFile.name)}`;
+    const photoPath = path.join(uploadDirectory, photoFilename);
+
+    fs.writeFileSync(photoPath, photoBuffer);
+
+    const title = formData.get("title");
+    const price = formData.get("price");
+    const description = formData.get("description");
+    const rating = formData.get("rating");
+    const location = formData.get("location");
+
     if (!title || !price || !description || !rating || !location) {
-      // Delete the file if validation fails
-      fs.unlink(photo.path, () => {
-        console.log("File deleted due to validation failure.");
-      });
+      if (fs.existsSync(photoPath)) {
+        fs.unlinkSync(photoPath);
+      }
       return new Response(
         JSON.stringify({ success: false, message: "Please fill all the fields" }),
         { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    // Create and save the rental service
     const newRental = new RentalService({
       title,
       price,
       description,
       rating,
       location,
-      image: `/uploads/${photo.filename}`,  // Save the relative file path
+      image: `/uploads/${photoFilename}`
     });
 
     await newRental.save();
@@ -108,6 +64,7 @@ export async function POST(req) {
       }),
       { status: 201, headers: { "Content-Type": "application/json" } }
     );
+
   } catch (error) {
     console.error(error);
     return new Response(
@@ -117,9 +74,343 @@ export async function POST(req) {
   }
 }
 
-// Disable bodyParser for file uploads in Next.js
 export const config = {
   api: {
-    bodyParser: false,  // Disable the default Next.js body parser to handle file upload
+    bodyParser: false,
   },
 };
+
+
+
+export async function GET() {
+  try {
+    const rentals = await RentalService.find({});
+    
+    return new Response(
+      JSON.stringify({
+        success: true,
+        data: rentals
+      }),
+      { 
+        status: 200,
+        headers: { "Content-Type": "application/json" }
+      }
+    );
+
+  } catch (error) {
+    console.error(error);
+    return new Response(
+      JSON.stringify({ 
+        success: false,
+        error: "Failed to fetch rentals",
+        details: error.message 
+      }),
+      { 
+        status: 500,
+        headers: { "Content-Type": "application/json" }
+      }
+    );
+  }
+}
+
+
+// DELETE /api/rental?id=123
+// Delete a specific rental by passing the rental ID as a query parameter
+// Example: DELETE http://localhost:3000/api/rental?id=abc123
+export async function DELETE(request) {
+  try {
+    // Validate request method
+    if (request.method !== 'DELETE') {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Method not allowed"
+        }),
+        {
+          status: 405,
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+    }
+
+    // Get and validate ID parameter
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Rental ID is required"
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+    }
+
+    // Validate ID format
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Invalid rental ID format"
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+    }
+
+    // Check if rental exists and get its data before deleting
+    const rental = await RentalService.findById(id);
+    if (!rental) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Rental not found"
+        }),
+        {
+          status: 404,
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+    }
+
+    // Delete associated images from uploads folder
+    if (rental.images && rental.images.length > 0) {
+      const fs = require('fs').promises;
+      const path = require('path');
+
+      for (const imageUrl of rental.images) {
+        try {
+          // Extract filename from URL or path
+          const filename = imageUrl.split('/').pop();
+          const imagePath = path.join(process.cwd(), 'public/uploads', filename);
+          
+          // Delete the file
+          await fs.unlink(imagePath);
+        } catch (err) {
+          console.error(`Failed to delete image file: ${err.message}`);
+          // Continue with deletion even if image removal fails
+        }
+      }
+    }
+
+    // Delete the rental from database
+    const deletedRental = await RentalService.findByIdAndDelete(id);
+
+    // Handle unexpected deletion failure
+    if (!deletedRental) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Failed to delete rental"
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+    }
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: "Rental and associated images deleted successfully",
+        data: deletedRental
+      }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" }
+      }
+    );
+
+  } catch (error) {
+    console.error('Delete rental error:', error);
+
+    // Handle specific MongoDB errors
+    if (error.name === 'CastError') {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Invalid rental ID format",
+          details: error.message
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+    }
+
+    // Handle connection errors
+    if (error.name === 'MongoNetworkError') {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Database connection error",
+          details: error.message
+        }),
+        {
+          status: 503,
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+    }
+
+    // Generic error handler
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: "Failed to delete rental",
+        details: error.message
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" }
+      }
+    );
+  }
+}
+
+
+
+// PUT /api/rental?id=<rental_id>
+
+export async function PUT(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Rental ID is required"
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+    }
+
+    const data = await request.json();
+
+    // Remove any undefined or null values
+    Object.keys(data).forEach(key => {
+      if (data[key] === undefined || data[key] === null) {
+        delete data[key];
+      }
+    });
+
+    if (Object.keys(data).length === 0) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "No valid fields provided for update"
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+    }
+
+    const updatedRental = await RentalService.findByIdAndUpdate(
+      id,
+      { $set: data },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedRental) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Rental not found"
+        }),
+        {
+          status: 404,
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+    }
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        data: updatedRental
+      }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" }
+      }
+    );
+
+  } catch (error) {
+    console.error('Update rental error:', error);
+
+    // Handle validation errors
+    if (error.name === 'ValidationError') {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Validation error",
+          details: error.message
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+    }
+
+    // Handle invalid ID format
+    if (error.name === 'CastError') {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Invalid rental ID format",
+          details: error.message
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+    }
+
+    // Handle connection errors
+    if (error.name === 'MongoNetworkError') {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Database connection error",
+          details: error.message
+        }),
+        {
+          status: 503,
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+    }
+
+    // Generic error handler
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: "Failed to update rental",
+        details: error.message
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" }
+        }
+      );
+  }
+}
+
+
