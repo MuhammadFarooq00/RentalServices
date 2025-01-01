@@ -84,7 +84,9 @@ export const config = {
 
 export async function GET() {
   try {
-    const rentals = await RentalService.find({});
+    await connectDB();
+    
+    const rentals = await RentalService.find({}).maxTimeMS(30000);
     
     return new Response(
       JSON.stringify({
