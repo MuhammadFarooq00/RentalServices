@@ -4,12 +4,14 @@ import { useState, useEffect } from 'react';
 import RentalCard from '@/components/RentalCard';
 import { FiSearch, FiArrowLeft, FiArrowRight } from 'react-icons/fi';
 import { motion } from 'framer-motion';
+import axios from 'axios';
 
-// Loading Component
-const Loading = () => (
-  <div className="flex items-center justify-center h-64">
-    <div className="w-12 h-12 border-4 border-t-4 border-gray-400 rounded-full animate-spin"></div>
-  </div>
+  // Loading Component
+  const Loading = () => (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+      <div className="w-16 h-16 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+      <p className="mt-4 text-lg font-medium text-gray-600">Loading details...</p>
+    </div>
 );
 
 // Not Found Component
@@ -28,37 +30,35 @@ const NotFound = () => (
 );
 
 export default function RentalsPage() {
-  const rentals = Array.from({ length: 50 }, (_, i) => ({
-    id: i + 1,
-    title: `Property ${i + 1}`,
-    price: 100 + (i % 300), // Deterministic pricing
-    image: `https://picsum.photos/200/300?random=${i + 1}`,
-    description: `This is a rental property with amenities for your stay.`,
-    rating: (3 + (i % 2)).toFixed(1), // Deterministic rating
-    location: getRandomLocation(i),
-  }));
-
-  function getRandomLocation(i) {
-    const locations = [
-      "New York, NY",
-      "Los Angeles, CA",
-      "Miami, FL",
-      "Chicago, IL",
-      "Austin, TX",
-      "Seattle, WA",
-      "Denver, CO",
-      "San Francisco, CA",
-      "Boston, MA",
-      "Dallas, TX",
-    ];
-    return locations[i % locations.length]; // Deterministic
-  }
-
   // State Management
+  const [rentals, setRentals] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [priceRange, setPriceRange] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch rentals data
+  useEffect(() => {
+    const fetchRentals = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get('/api/rental');
+        if (response.data.success) {
+          setRentals(response.data.data);
+        } else {
+          setError('Failed to fetch rentals');
+        }
+      } catch (err) {
+        setError(err.message);
+        console.error('Error fetching rentals:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchRentals();
+  }, []);
 
   // Pagination Variables
   const itemsPerPage = 12;
@@ -93,11 +93,14 @@ export default function RentalsPage() {
     setCurrentPage((prev) => prev + direction);
   };
 
-  useEffect(() => {
-    setIsLoading(true);
-    const timer = setTimeout(() => setIsLoading(false), 1000); // Simulate loading time
-    return () => clearTimeout(timer);
-  }, []);
+  if (error) {
+    return (
+      <div className="py-12 text-center text-red-600">
+        <h2 className="text-2xl font-semibold">Error</h2>
+        <p className="mt-4">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <section className="py-12 mt-5 text-black bg-white">
@@ -139,7 +142,7 @@ export default function RentalsPage() {
         <div className="grid grid-cols-1 gap-6 px-5 my-10 sm:grid-cols-2 lg:grid-cols-3">
           {displayedRentals.map((rental) => (
             <motion.div
-              key={rental.id}
+              key={rental._id}
               whileHover={{ scale: 1.05 }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

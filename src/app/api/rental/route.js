@@ -116,6 +116,8 @@ export async function GET() {
 }
 
 
+
+
 // DELETE /api/rental?id=123
 // Delete a specific rental by passing the rental ID as a query parameter
 // Example: DELETE http://localhost:3000/api/rental?id=abc123
@@ -414,5 +416,92 @@ export async function PUT(request) {
       );
   }
 }
+
+
+
+
+// // GET /api/rental?id=123
+// // Get a specific rental by passing the rental ID as a query parameter
+// // Example: GET http://localhost:3000/api/rental?id=abc123
+// export async function GET(request) {
+//   try {
+//     await connectDB();
+
+//     // Check if ID parameter exists
+//     const { searchParams } = new URL(request.url);
+//     const id = searchParams.get('id');
+
+//     // If ID exists, return single rental, otherwise return all rentals
+//     if (id) {
+//       // Validate ID format
+//       if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+//         return new Response(
+//           JSON.stringify({
+//             success: false,
+//             error: "Invalid rental ID format"
+//           }),
+//           {
+//             status: 400,
+//             headers: { "Content-Type": "application/json" }
+//           }
+//         );
+//       }
+
+//       const rental = await RentalService.findById(id).lean().maxTimeMS(30000);
+
+//       if (!rental) {
+//         return new Response(
+//           JSON.stringify({
+//             success: false,
+//             error: "Rental not found"
+//           }),
+//           {
+//             status: 404,
+//             headers: { "Content-Type": "application/json" }
+//           }
+//         );
+//       }
+
+//       return new Response(
+//         JSON.stringify({
+//           success: true,
+//           data: rental
+//         }),
+//         {
+//           status: 200,
+//           headers: { "Content-Type": "application/json" }
+//         }
+//       );
+//     }
+
+//     // Return all rentals if no ID provided
+//     const rentals = await RentalService.find({}).maxTimeMS(30000);
+    
+//     return new Response(
+//       JSON.stringify({
+//         success: true,
+//         data: rentals
+//       }),
+//       {
+//         status: 200,
+//         headers: { "Content-Type": "application/json" }
+//       }
+//     );
+
+//   } catch (error) {
+//     console.error(error);
+//     return new Response(
+//       JSON.stringify({
+//         success: false,
+//         error: "Failed to fetch rental(s)", 
+//         details: error.message
+//       }),
+//       {
+//         status: 500,
+//         headers: { "Content-Type": "application/json" }
+//       }
+//     );
+//   }
+// }
 
 

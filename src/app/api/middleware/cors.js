@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 export function middleware(req) {
   const origin = req.headers.get('origin');
-  const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001'];
+  const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001', 'https://rental-services-project.netlify.app', 'https://rental-services-project.vercel.app/'];
 
   // Handle preflight requests
   if (req.method === 'OPTIONS') {

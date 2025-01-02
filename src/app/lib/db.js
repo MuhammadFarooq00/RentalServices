@@ -11,7 +11,7 @@ const connectDB = async () => {
   if (mongoose.connection.readyState >= 1) return;
 
   try {
-    await mongoose.connect('mongodb://localhost:27017/rental-services');
+    await mongoose.connect('mongodb+srv://farooqtariq400:Muhammadfarooq@cluster0.e8d9eeg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/rental-services');
     console.log('MongoDB connected');
   } catch (error) {
     console.error('MongoDB connection error: ', error);

@@ -1,246 +1,335 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { FiCheckCircle } from 'react-icons/fi';
-import { useRouter } from 'next/router';
-import { use, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FiCheckCircle, FiMapPin, FiStar, FiDollarSign, FiHome, FiCalendar } from 'react-icons/fi';
+import { useState, useEffect, use } from 'react';
 import BookingModal from '@/components/BookingModal';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
+
+const Loading = () => (
+  <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+    <div className="w-16 h-16 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+    <p className="mt-4 text-lg font-medium text-gray-600">Loading details...</p>
+  </div>
+);
+
 export default function RentalDetails({ params }) {
-  const { id } = use(params);
+  const unwrappedParams = use(params);
+  const { id } = unwrappedParams;
+  const [rental, setRental] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const handleBooking = () => {
-    setIsModalOpen(true);
+  useEffect(() => {
+    const fetchRental = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get(`/api/rental/${id}`);
+        if (response.data.success) {
+          setRental({
+            ...response.data.data,
+            availability: "Available Now",
+            amenities: [
+              { icon: "🌐", name: "High-Speed WiFi" },
+              { icon: "🚗", name: "Free Parking" },
+              { icon: "🏊‍♂️", name: "Swimming Pool" },
+              { icon: "❄️", name: "Air Conditioning" },
+              { icon: "🔒", name: "24/7 Security" },
+              { icon: "🏋️‍♂️", name: "Fitness Center" }
+            ],
+            reviews: [
+              {
+                reviewer: "John Doe",
+                rating: 4.5,
+                comment: "Exceptional stay! The property exceeded our expectations in every way.",
+                date: "2024-01-15",
+                avatar: "/avatars/user1.jpg"
+              },
+              {
+                reviewer: "Jane Smith",
+                rating: 5,
+                comment: "Perfect location with stunning views. Highly recommended!",
+                date: "2024-01-10",
+                avatar: "/avatars/user2.jpg"
+              }
+            ],
+            host: {
+              name: "Sarah Wilson",
+              contact: "host@example.com",
+              phone: "+1234567890",
+              profileImage: "/host-profile.jpg",
+              responseRate: "98%",
+              joinedDate: "2022",
+              languages: ["English", "Spanish"],
+              superhost: true
+            },
+            propertyHighlights: [
+              "Beachfront Location",
+              "Recently Renovated",
+              "Panoramic Ocean Views",
+              "Private Balcony"
+            ]
+          });
+        } else {
+          setError('Failed to fetch rental details');
+        }
+      } catch (err) {
+        setError(err.message);
+        console.error('Error fetching rental:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchRental();
+  }, [id]);
+
+  const handleBooking = () => setIsModalOpen(true);
+  const handleModalClose = () => setIsModalOpen(false);
+
+  const handleBookingSubmit = async (bookingData) => {
+    try {
+      const response = await axios.post('/api/booking', {
+        rentalId: id,
+        ...bookingData
+      });
+      
+      if (response.data.success) {
+        toast.success('Booking confirmed successfully!');
+        handleModalClose();
+      } else {
+        toast.error(response.data.message || 'Booking failed');
+      }
+    } catch (error) {
+      console.error('Booking error:', error);
+      toast.error(error.response?.data?.message || 'Failed to process booking');
+    }
   };
 
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleBookingSubmit = (data) => {
-    console.log('Booking Data:', data);
-    // Send `data` to the backend using fetch or axios
-  };
-
-  // Sample data for the rental
-  const rental = {
-    id,
-    title: `Property ${id}`,
-    description: `This is a spacious property located in the heart of the city with all amenities included. It's perfect for families, couples, or solo travelers looking for a cozy and luxurious stay.`,
-    price: 150,
-    image: `https://picsum.photos/800/600?random=${2}`,
-    rating: 4.5,
-    location: 'New York, NY',
-    amenities: [
-      'Free WiFi',
-      'Air Conditioning',
-      'Fully Equipped Kitchen',
-      'Private Balcony',
-      'Smart TV with Netflix',
-      '24/7 Security',
-      'Swimming Pool Access',
-      'Fitness Center',
-      'Free Parking',
-      'Pet Friendly',
-    ],
-    reviews: [
-      {
-        reviewer: 'John Doe',
-        rating: 5,
-        comment: 'Amazing place! Clean and well-maintained. The location was perfect.',
-      },
-      {
-        reviewer: 'Jane Smith',
-        rating: 4,
-        comment: 'Great stay, but the WiFi could be faster.',
-      },
-      {
-        reviewer: 'Emily Johnson',
-        rating: 5,
-        comment: 'Absolutely loved the amenities and the comfort provided!',
-      },
-    ],
-    host: {
-      name: 'Alice Green',
-      contact: 'alice.green@example.com',
-      phone: '+1 234-567-8901',
-      profileImage: `https://picsum.photos/100/100?random=${5}`,
-    },
-    availability: 'Available for booking',
-    nearbyAttractions: [
-      'Central Park - 1.2 miles',
-      'Times Square - 0.8 miles',
-      'Empire State Building - 1.5 miles',
-      'Museum of Modern Art - 0.9 miles',
-    ],
-  };
-
-
-  // const router = useRouter();
-
-  // Function to handle booking action
-  // const handleBooking = () => {
-  //   // Redirect to the booking page or show a booking modal
-  //   alert(`Booking for ${rental.title} has been confirmed!`);
-  // };
+  if (isLoading) return <Loading />;
+  if (error) return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-red-50">
+      <div className="p-8 text-center bg-white rounded-lg shadow-lg">
+        <h2 className="text-2xl font-bold text-red-600">Error</h2>
+        <p className="mt-4 text-gray-600">{error}</p>
+      </div>
+    </div>
+  );
+  if (!rental) return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+      <div className="p-8 text-center bg-white rounded-lg shadow-lg">
+        <h2 className="text-2xl font-bold text-gray-600">Rental Not Found</h2>
+        <p className="mt-4 text-gray-500">The requested rental property could not be found.</p>
+      </div>
+    </div>
+  );
 
   return (
-    <section className="py-12 bg-gray-50">
-      <div className="container px-4 mx-auto">
-        <h1 className="mb-8 text-4xl font-bold text-gray-800">
-          {rental.title}
-        </h1>
-
-        {/* Image and Info Section */}
-        <motion.div
-          className="flex flex-col gap-8"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-        >
-          <div className="flex-1">
-            <img
-              src={rental.image}
-              alt={rental.title}
-              className="object-cover w-full rounded-lg shadow-md h-96"
-            />
+    <AnimatePresence>
+      <section className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+        {/* Hero Section with Single Image */}
+        <div className="relative h-[70vh] w-full overflow-hidden group">
+          <div className="absolute inset-0 bg-black/30 z-10 transition-all duration-300 group-hover:bg-black/20" />
+          <motion.img
+            src={rental.image}
+            alt={rental.title}
+            className="object-cover w-full h-full transform transition-transform duration-700 group-hover:scale-105"
+            initial={{ scale: 1.1 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 1.5 }}
+          />
+          <div className="absolute inset-0 z-20 flex flex-col justify-end p-12 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+            <div className="container mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="max-w-4xl"
+              >
+                <motion.div 
+                  className="flex items-center gap-3 mb-6"
+                  whileHover={{ x: 10 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  <FiHome className="text-yellow-400 text-xl animate-pulse" />
+                  <span className="text-yellow-400 uppercase tracking-wider font-semibold hover:text-yellow-300 transition-colors">Premium Property</span>
+                </motion.div>
+                <motion.h1 
+                  className="mb-6 text-6xl font-bold text-white leading-tight hover:text-yellow-50 transition-colors duration-300"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                >
+                  {rental.title}
+                </motion.h1>
+                <motion.div 
+                  className="flex flex-wrap items-center gap-8 text-white text-lg"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.6 }}
+                >
+                  <motion.div 
+                    className="flex items-center gap-2 hover:text-yellow-400 transition-colors duration-300"
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    <FiMapPin className="text-xl" />
+                    <span>{rental.location}</span>
+                  </motion.div>
+                  <motion.div 
+                    className="flex items-center gap-2 hover:text-yellow-400 transition-colors duration-300"
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    <FiStar className="text-xl text-yellow-400" />
+                    <span>{rental.rating}/5 Rating</span>
+                  </motion.div>
+                  <motion.div 
+                    className="flex items-center gap-2 hover:text-yellow-400 transition-colors duration-300"
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    <FiDollarSign className="text-xl" />
+                    <span>${rental.price}/night</span>
+                  </motion.div>
+                </motion.div>
+              </motion.div>
+            </div>
           </div>
+        </div>
 
-          <div className="flex-1">
-            <div className="p-6 bg-white rounded-lg shadow-md">
-              <h2 className="mb-4 text-2xl font-semibold">Details</h2>
-              <p className="mb-4 text-gray-600">{rental.description}</p>
+        <div className="container px-4 py-12 mx-auto max-w-7xl">
+          <div className="grid gap-8 md:grid-cols-3">
+            {/* Main Content */}
+            <div className="md:col-span-2 space-y-8">
+              {/* Property Highlights */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="p-6 bg-white rounded-xl shadow-lg"
+              >
+                <h2 className="mb-6 text-2xl font-bold text-gray-800">Property Highlights</h2>
+                <div className="grid grid-cols-2 gap-4">
+                  {rental.propertyHighlights.map((highlight, index) => (
+                    <div key={index} className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                      <FiCheckCircle className="text-green-500" />
+                      <span className="font-medium">{highlight}</span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
 
-              <div className="flex items-center mb-4">
-                <FiCheckCircle className="mr-2 text-green-500" size={20} />
-                <span className="text-lg font-semibold">{rental.availability}</span>
+              {/* Description */}
+              <div className="p-6 bg-white rounded-xl shadow-lg">
+                <h2 className="mb-4 text-2xl font-bold text-gray-800">About this space</h2>
+                <p className="text-lg leading-relaxed text-gray-600">{rental.description}</p>
               </div>
 
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-xl font-semibold text-gray-800">
-                  Price: ${rental.price}/night
-                </span>
-                <div className="flex items-center text-yellow-500">
-                  <span className="mr-1 text-lg font-semibold">{rental.rating}</span>
-                  <FiCheckCircle />
+              {/* Amenities */}
+              <div className="p-6 bg-white rounded-xl shadow-lg">
+                <h2 className="mb-6 text-2xl font-bold text-gray-800">Amenities</h2>
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                  {rental.amenities.map((amenity, index) => (
+                    <div key={index} className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                      <span className="text-xl">{amenity.icon}</span>
+                      <span className="font-medium">{amenity.name}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              <div className="flex items-center mb-4">
-                <span className="text-lg font-medium text-gray-600">Location: </span>
-                <span className="text-lg font-semibold text-gray-800">{rental.location}</span>
-              </div>
-
-              <div className="mb-4">
-                <h3 className="mb-2 text-lg font-semibold text-gray-800">Amenities:</h3>
-                <ul className="text-gray-600 list-disc list-inside">
-                  {rental.amenities.map((amenity, index) => (
-                    <li key={index}>{amenity}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="mb-4">
-                <h3 className="mb-2 text-lg font-semibold text-gray-800">Reviews:</h3>
-                <ul className="space-y-4">
+              {/* Reviews */}
+              <div className="p-6 bg-white rounded-xl shadow-lg">
+                <h2 className="mb-6 text-2xl font-bold text-gray-800">Guest Reviews</h2>
+                <div className="space-y-6">
                   {rental.reviews.map((review, index) => (
-                    <li key={index} className="p-4 bg-gray-100 rounded-lg shadow-sm">
-                      <p className="font-semibold text-gray-800">{review.reviewer}</p>
-                      <p className="font-medium text-yellow-500">Rating: {review.rating}/5</p>
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: index * 0.1 }}
+                      className="p-4 bg-gray-50 rounded-lg"
+                    >
+                      <div className="flex items-center gap-4 mb-3">
+                        <img
+                          src={"https://i.pravatar.cc/150?img=1"}
+                          alt={review.reviewer}
+                          className="w-12 h-12 rounded-full"
+                        />
+                        <div>
+                          <h4 className="font-semibold">{review.reviewer}</h4>
+                          <div className="flex items-center gap-1">
+                            {[...Array(5)].map((_, i) => (
+                              <FiStar
+                                key={i}
+                                className={i < review.rating ? 'text-yellow-400' : 'text-gray-300'}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                        <span className="ml-auto text-sm text-gray-500">{review.date}</span>
+                      </div>
                       <p className="text-gray-600">{review.comment}</p>
-                    </li>
+                    </motion.div>
                   ))}
-                </ul>
+                </div>
               </div>
+            </div>
 
-              <div className="mb-4">
-                <h3 className="mb-2 text-lg font-semibold text-gray-800">Host Information:</h3>
-                <div className="flex items-center">
-                  <img
-                    src={rental.host.profileImage}
-                    alt={rental.host.name}
-                    className="w-12 h-12 mr-4 rounded-full"
-                  />
-                  <div>
-                    <p className="font-semibold text-gray-800">{rental.host.name}</p>
-                    <p className="text-gray-600">{rental.host.contact}</p>
-                    <p className="text-gray-600">{rental.host.phone}</p>
+            {/* Booking Card */}
+            <div className="md:col-span-1">
+              <div className="sticky top-20 p-6 bg-white rounded-xl shadow-lg">
+                <div className="p-4 mb-6 text-center bg-yellow-50 rounded-lg">
+                  <div className="text-3xl font-bold text-gray-800">
+                    ${rental.price}
+                    <span className="text-lg text-gray-500">/night</span>
+                  </div>
+                  <div className="mt-2 text-sm text-gray-600">Includes all fees</div>
+                </div>
+
+                <motion.button
+                  onClick={handleBooking}
+                  className="w-full py-4 mb-6 font-semibold text-white transition-all rounded-lg bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  Book Now
+                </motion.button>
+
+                {/* Host Information */}
+                <div className="p-4 mt-6 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-4 mb-4">
+                    <img
+                      src={"https://i.pravatar.cc/150?img=1"}
+                      alt={rental.host.name}
+                      className="w-16 h-16 rounded-full"
+                    />
+                    <div>
+                      <h4 className="font-semibold">{rental.host.name}</h4>
+                      {rental.host.superhost && (
+                        <span className="px-2 py-1 text-xs font-medium text-yellow-600 bg-yellow-100 rounded-full">
+                          Superhost
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                    <div className="space-y-2 text-sm text-gray-600 ">
+                    <p>Response rate: {rental.host.responseRate}</p>
+                    <p>Languages: {rental.host.languages.join(', ')}</p>
+                    <p>Member since: {rental.host.joinedDate}</p>
                   </div>
                 </div>
               </div>
-
-              <div className="mb-4">
-                <h3 className="mb-2 text-lg font-semibold text-gray-800">Nearby Attractions:</h3>
-                <ul className="text-gray-600 list-disc list-inside">
-                  {rental.nearbyAttractions.map((attraction, index) => (
-                    <li key={index}>{attraction}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <motion.button
-                onClick={handleBooking}
-                className="w-full py-3 font-semibold text-white transition duration-300 rounded-lg bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700"
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.3 }}
-              >
-                Book Now
-              </motion.button>
-              <div className="p-6">
-                <BookingModal
-                  isOpen={isModalOpen}
-                  onClose={handleModalClose}
-                  onSubmit={handleBookingSubmit}
-                  serviceName="Trackless Train"
-                />
-              </div>
             </div>
           </div>
-
-        </motion.div>
-
-        {/* Booking Details or Call to Action Section */}
-        <div className="mt-12 text-center">
-          <h2 className="mb-4 text-3xl font-semibold text-gray-800">Why Choose This Property?</h2>
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            <motion.div
-              className="p-6 bg-white rounded-lg shadow-md"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1, delay: 0.2 }}
-            >
-              <h3 className="mb-2 text-xl font-semibold">Spacious Rooms</h3>
-              <p className="text-gray-600">
-                Enjoy large rooms with modern amenities, perfect for relaxation.
-              </p>
-            </motion.div>
-
-            <motion.div
-              className="p-6 bg-white rounded-lg shadow-md"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1, delay: 0.4 }}
-            >
-              <h3 className="mb-2 text-xl font-semibold">Prime Location</h3>
-              <p className="text-gray-600">
-                Located in a vibrant neighborhood close to shopping, dining, and entertainment.
-              </p>
-            </motion.div>
-
-            <motion.div
-              className="p-6 bg-white rounded-lg shadow-md"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1, delay: 0.6 }}
-            >
-              <h3 className="mb-2 text-xl font-semibold">Luxury Amenities</h3>
-              <p className="text-gray-600">
-                Fully equipped with luxury amenities to make your stay memorable.
-              </p>
-            </motion.div>
-          </div>
         </div>
-      </div>
-    </section>
+
+        <BookingModal
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          onSubmit={handleBookingSubmit}
+          serviceName={rental.title}
+        />
+      </section>
+    </AnimatePresence>
   );
 }

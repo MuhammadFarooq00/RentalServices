@@ -92,8 +92,8 @@ export default function DashboardPage() {
     try {
       setIsBookingLoading(true);
       const url = query 
-        ? `http://localhost:3001/api/booking?${query}`
-        : 'http://localhost:3001/api/booking';
+        ? `/api/booking?${query}`
+        : '/api/booking';
       const response = await axios.get(url);
       setBookings(response?.data);
       console.log(response?.data);
@@ -137,7 +137,7 @@ export default function DashboardPage() {
 
   const handleUpdateBooking = async () => {
     try {
-      const response = await axios.patch(`http://localhost:3001/api/booking?id=${selectedBooking._id}`, {
+      const response = await axios.patch(`/api/booking?id=${selectedBooking._id}`, {
         status: updatedFulfillStatus
       });
       
@@ -168,7 +168,7 @@ export default function DashboardPage() {
       console.log("bookingToDelete is : ", bookingToDelete)
       // console.log("bookings is : ", bookings)
       
-      await axios.delete(`http://localhost:3001/api/booking?id=${bookingToDelete._id}`);
+      await axios.delete(`/api/booking?id=${bookingToDelete._id}`);
  
       setBookings(prevBookings => ({
         ...prevBookings,
