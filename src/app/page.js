@@ -1,6 +1,5 @@
 'use client';
-
-import React from 'react';
+import { useEffect,useRef } from 'react';
 import Slider from 'react-slick';
 import { motion } from 'framer-motion';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
@@ -11,10 +10,11 @@ import Image from 'next/image';
 import { Toaster } from 'react-hot-toast';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { useAuth } from './context/AuthContext';
 
 const HomePage = () => {
-  const sliderRef = React.useRef();
-
+  const sliderRef = useRef();
+  const {user:UserData,setUser} = useAuth();
   const settings = {
     dots: true,
     infinite: true,
@@ -53,6 +53,8 @@ const HomePage = () => {
       description: 'Host your events in our well-equipped venues.',
     },
   ];
+
+
 
   return (
 

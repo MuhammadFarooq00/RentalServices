@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { FaMapMarkerAlt, FaStar } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
-const RentalCard = ({ rental }) => {
+const RentalCard = ({ rental,userId }) => {
   const { title, description, price, image, _id, location, rating } = rental;
 
   return (
@@ -44,7 +44,7 @@ const RentalCard = ({ rental }) => {
         <div className="flex items-center justify-between">
           <span className="text-lg font-semibold">${price}/night</span>
           <Link
-            href={`/rentals/${_id}`}
+            href={`/rentals/${userId}/${_id}`}
             className="px-4 py-2 text-white transition duration-300 ease-in-out rounded-lg bg-gradient-to-r from-pink-300 to-purple-500 hover:from-pink-500 hover:to-purple-700"
           >
             Check More Details!

@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { FaBox, FaDollarSign, FaMapMarkerAlt, FaStar, FaFileAlt, FaImage } from 'react-icons/fa';
 import Loader from '@/components/Loader';
+import { useAuth } from '@/app/context/AuthContext';
 
 export default function AddRentalPage() {
   const [title, setTitle] = useState('');
@@ -15,14 +16,16 @@ export default function AddRentalPage() {
   const [location, setLocation] = useState('');
   const [rating, setRating] = useState('');
   const [loading, setLoading] = useState(false);
+  const [UserData, SetUserData] = useState();
   const router = useRouter();
-
+  console.log("user data is : ", UserData)
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
       const formData = new FormData();
+      formData.append('userId', UserData?.user?.id)
       formData.append('title', title);
       formData.append('price', price);
       formData.append('description', description);
@@ -67,6 +70,13 @@ export default function AddRentalPage() {
       setImage(file);
     }
   };
+
+  useEffect(()=>{
+    const userData = JSON.parse(localStorage.getItem('user'));
+    if(userData){
+      SetUserData(userData);
+    }
+  },[])
 
   return (
     <div className="2xl:container mx-auto lg:p-6 py-6 px-3">

@@ -10,6 +10,7 @@ if (!fs.existsSync(uploadDirectory)) {
   fs.mkdirSync(uploadDirectory, { recursive: true });
 }
 
+
 export async function POST(req) {
   await connectDB();
 
@@ -30,13 +31,14 @@ export async function POST(req) {
 
     fs.writeFileSync(photoPath, photoBuffer);
 
+    const userId = formData.get("userId"); // Get user ID from form data
     const title = formData.get("title");
     const price = formData.get("price");
     const description = formData.get("description");
     const rating = formData.get("rating");
     const location = formData.get("location");
 
-    if (!title || !price || !description || !rating || !location) {
+    if (!userId || !title || !price || !description || !rating || !location) {
       if (fs.existsSync(photoPath)) {
         fs.unlinkSync(photoPath);
       }
@@ -47,6 +49,7 @@ export async function POST(req) {
     }
 
     const newRental = new RentalService({
+      user: userId,
       title,
       price,
       description,
@@ -73,6 +76,8 @@ export async function POST(req) {
     );
   }
 }
+
+
 
 export const config = {
   api: {

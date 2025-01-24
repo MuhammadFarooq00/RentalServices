@@ -1,21 +1,27 @@
-// /lib/db.js
-import { config } from "dotenv";
-config({
-    path: "./.env"
-})
-
 import mongoose from "mongoose";
 
+ const connectDB = async () => {
+  const MONGODB_URI = process.env.MONGODB_URI;
 
-const connectDB = async () => {
-  if (mongoose.connection.readyState >= 1) return;
+  if (!MONGODB_URI) {
+    console.error("MONGODB_URI is not defined in environment variables.");
+    throw new Error("Missing MongoDB connection string.");
+  }
+
+  if (mongoose.connection.readyState === 1) {
+    console.log("Already connected to the database.");
+    return mongoose.connection;
+  }
 
   try {
-    await mongoose.connect('mongodb+srv://farooqtariq400:Muhammadfarooq@cluster0.e8d9eeg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/rental-services');
-    console.log('MongoDB connected');
+    const connection = await mongoose.connect(MONGODB_URI, {
+      serverSelectionTimeoutMS: 30000, // Increase timeout to 30 seconds
+    });
+    console.log("Connected to the database.");
+    return connection;
   } catch (error) {
-    console.error('MongoDB connection error: ', error);
-    process.exit(1);
+    console.error("Database connection failed:", error);
+    throw error;
   }
 };
 

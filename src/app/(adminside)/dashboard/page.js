@@ -7,6 +7,7 @@ import Link from 'next/link';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import Loader from '@/components/Loader';
+import { useAuth } from '@/app/context/AuthContext';
 
 export default function DashboardPage() {
   const [rentals, setRentals] = useState([]);
@@ -45,6 +46,7 @@ export default function DashboardPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [limit] = useState(10);
   const [totalContacts, setTotalContacts] = useState(0);
+
   const router = useRouter();
   const [rerender, setRerender] = useState(false)
   useEffect(() => {
@@ -54,22 +56,27 @@ export default function DashboardPage() {
     }
   }, [router]);
 
+
   useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("user"));
+   
     const fetchRentals = async () => {
       try {
         setIsLoading(true);
-        const { data } = await axios.get('/api/rental');
+        const { data } = await axios.get(`/api/rental/${userData?.user?.id}`);
+        console.log("data is : ", data)
         if (data.success) {
-          setRentals(data.data);
-              }
+          setRentals(data?.rentals);
+        }
         setIsLoading(false);
       } catch (error) {
         console.error('Error fetching rentals:', error);
         setIsLoading(false);
       }
     };
-
-    fetchRentals();
+    if(userData){
+      fetchRentals();
+    }
 
     // Set up polling to check for updates every 30 seconds
     const interval = setInterval(fetchRentals, 30000);
@@ -370,11 +377,11 @@ export default function DashboardPage() {
               Rental Service Dashboard
             </h1>
 
-            <span className="text-amber-400 transition-all duration-300 group-hover:scale-110">
+            {/* <span className="text-amber-400 transition-all duration-300 group-hover:scale-110">
               <svg className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 animate-float" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-            </span>
+            </span> */}
           </div>
         </div>
 
@@ -403,12 +410,12 @@ export default function DashboardPage() {
         <button
           onClick={() => {
             handleSectionChange('dashboard');
-            try {
-              const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2570/2570-preview.mp3');
-              audio.play();
-            } catch (error) {
-              console.log('Audio playback failed:', error);
-            }
+            // try {
+            //   const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2570/2570-preview.mp3');
+            //   audio.play();
+            // } catch (error) {
+            //   console.log('Audio playback failed:', error);
+            // }
           }}
           className={`group relative flex items-center space-x-2 font-semibold px-8 py-3 rounded-lg min-w-[200px] sm:min-w-[220px] backdrop-blur-sm transition duration-300 ease-in-out ${
             activeSection === 'dashboard' 
@@ -425,12 +432,12 @@ export default function DashboardPage() {
         <button
           onClick={() => {
             handleSectionChange('booking');
-            try {
-              const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2570/2570-preview.mp3');
-              audio.play();
-            } catch (error) {
-              console.log('Audio playback failed:', error);
-            }
+            // try {
+            //   const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2570/2570-preview.mp3');
+            //   audio.play();
+            // } catch (error) {
+            //   console.log('Audio playback failed:', error);
+            // }
           }}
           className={`group relative flex items-center space-x-2 font-semibold px-8 py-3 rounded-lg min-w-[200px] sm:min-w-[220px] backdrop-blur-sm transition duration-300 ease-in-out ${
             activeSection === 'booking'
@@ -447,12 +454,12 @@ export default function DashboardPage() {
         <button
           onClick={() => {
             handleSectionChange('contact');
-            try {
-              const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2570/2570-preview.mp3');
-              audio.play();
-            } catch (error) {
-              console.log('Audio playback failed:', error);
-            }
+            // try {
+            //   const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2570/2570-preview.mp3');
+            //   audio.play();
+            // } catch (error) {
+            //   console.log('Audio playback failed:', error);
+            // }
           }}
           className={`group relative flex items-center space-x-2 font-semibold px-8 py-3 rounded-lg min-w-[200px] sm:min-w-[220px] backdrop-blur-sm transition duration-300 ease-in-out ${
             activeSection === 'contact'
@@ -513,7 +520,7 @@ export default function DashboardPage() {
           <div className="overflow-x-auto bg-gradient-to-br from-slate-800 to-slate-900 p-6 rounded-xl rounded-t-none shadow-2xl relative">
             <Link
               href="/add-rental"
-              className="fixed bottom-6 right-10 p-4 bg-gradient-to-r from-yellow-400 to-amber-500 text-gray-900 rounded-full shadow-lg hover:from-yellow-500 hover:to-amber-600 transition-all duration-500 transform hover:scale-110 focus:ring-2 focus:ring-yellow-300 animate-[bounce_2s_ease-in-out_infinite]"
+              className="fixed bottom-6 right-10 p-4 z-50 bg-gradient-to-r from-yellow-400 to-amber-500 text-gray-900 rounded-full shadow-lg hover:from-yellow-500 hover:to-amber-600 transition-all duration-500 transform hover:scale-110 focus:ring-2 focus:ring-yellow-300 animate-[bounce_2s_ease-in-out_infinite]"
             >
               <FaPlus size={24} />
             </Link>
@@ -525,7 +532,9 @@ export default function DashboardPage() {
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-              {!isLoading && rentals.map((rental) => (
+              {console.log("check the rentals is are : ", rentals)}
+            
+              {!isLoading && rentals?.map((rental) => (
                 <div key={rental._id} className="bg-white/10 backdrop-blur-lg rounded-xl overflow-hidden border border-white/10 hover:border-yellow-500/50 transition-all duration-300 transform hover:scale-[1.02]">
                   <img src={rental.image} alt={rental.title} className="w-full h-48 object-cover" />
                   <div className="p-4">
@@ -551,7 +560,18 @@ export default function DashboardPage() {
                   </div>
                 </div>
               ))}
+            
             </div>
+
+            {!isLoading && rentals?.length < 1 && (
+                <div className="flex items-center w-full justify-center py-20 h-full">
+                  <div className="text-center w-fit mx-auto">
+                    {/* <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20.25l-3.75 3.75M19.5 6.59388L16.25 3.31812" /></svg> */}
+                    <h3 className="mt-2 text-lg font-medium leading-6 text-white">No Rentals Found</h3>
+                    <p className="mt-2 text-sm text-gray-300">We couldn't find any rentals Please click (+) to add the Rental</p>
+                  </div>
+                </div>
+              )}
 
             {/* Edit Modal */}
             {isEditModalOpen && (
