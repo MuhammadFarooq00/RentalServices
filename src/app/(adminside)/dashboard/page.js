@@ -46,14 +46,20 @@ export default function DashboardPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [limit] = useState(10);
   const [totalContacts, setTotalContacts] = useState(0);
-
   const router = useRouter();
+  const {user:UserData} = useAuth();
   const [rerender, setRerender] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
   useEffect(() => {
-    const isAuthenticated = localStorage.getItem('auth');
-    if (!isAuthenticated) {
-      router.push('/login');
+    const userData = JSON.parse(localStorage.getItem("user"));
+    if (!userData) {
+      router.push('/auth/login');
+    } else {
+      setIsAuthenticated(true);
     }
+    setIsCheckingAuth(false);
   }, [router]);
 
 
@@ -354,6 +360,15 @@ export default function DashboardPage() {
     fetchContacts();
   }, [currentPage,rerender]);
 
+
+  if (isCheckingAuth) {
+    return null; // Or a loading spinner if you prefer
+  }
+
+  if (!isAuthenticated) {
+    return null; // Prevent rendering if user is not authenticated
+  }
+
   return (
     <div className="2xl:container mx-auto lg:p-6 py-6 px-3">
       <div className="relative mb-0 px-6 py-8 bg-gradient-to-br from-slate-900 to-slate-800 rounded-t-2xl  shadow-2xl overflow-hidden transform transition-all duration-500">
@@ -366,6 +381,11 @@ export default function DashboardPage() {
 
         {/* Main content */}
         <div className="relative z-10">
+          
+        <Link href="/" className="px-4 py-2 absolute left- 0 text-white  border-2 border-yellow-600 rounded-md shadow-md  transition-all duration-300">
+              Back to Home
+          </Link>
+
           <div className="flex items-center justify-center gap-2 sm:gap-4 group cursor-pointer">
             <span className="text-amber-400 transition-all duration-300 group-hover:scale-110">
               <svg className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 animate-spin-slow" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -451,7 +471,7 @@ export default function DashboardPage() {
           <span>Booking Management</span>
         </button>
 
-        <button
+        {/* <button
           onClick={() => {
             handleSectionChange('contact');
             // try {
@@ -471,7 +491,7 @@ export default function DashboardPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
           </svg>
           <span>Contact Management</span>
-        </button>
+        </button> */}
       </div>
 
       {/* Dashboard Section */}

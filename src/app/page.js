@@ -62,14 +62,35 @@ const HomePage = () => {
    
     <div>
       
+    <section className="relative px-6 py-32 text-white bg-gradient-to-r from-gray-700 to-slate-500">
+        <div className="container mx-auto text-center">
+          <motion.h1
+            className="mb-6 text-5xl font-extrabold"
+            // initial={{ opacity: 0, y: -50 }}
+            // animate={{ opacity: 1, y: 0 }}
+            // transition={{ duration: 0.2 }}
+          >
+            Welcome to Rental Services
+          </motion.h1>
+          <motion.p
+            className="mb-8 text-lg"
+            // initial={{ opacity: 0, y: 50 }}
+            // animate={{ opacity: 1, y: 0 }}
+            // transition={{ duration: 0.2, delay: 0.1 }}
+          >
+            Find the perfect rental for your needs — whether it's a home, car, or tools for your next project.
+          </motion.p>
+        </div>
+      </section>
 
-      <section className="py-12 pt-5 bg-gray-100">
+
+      <section className="py-12  border-t-2 border-gray-700 bg-gradient-to-r from-gray-700 to-slate-500">
         <div className="container mx-auto">
           <motion.div
             className="relative overflow-hidden rounded-lg shadow-md"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
+            // initial={{ opacity: 0 }}
+            // whileInView={{ opacity: 1 }}
+            // transition={{ duration: 0.2 }}
           >
             <Slider ref={sliderRef} {...settings}>
               {slides.map((slide, index) => (
@@ -103,34 +124,13 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section className="relative px-6 py-20 mx-1 mt-5 text-white bg-gradient-to-r from-gray-700 rounded-xl to-slate-500">
-        <div className="container mx-auto text-center">
-          <motion.h1
-            className="mb-6 text-5xl font-extrabold"
-            initial={{ opacity: 0, y: -50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            Welcome to Rental Services
-          </motion.h1>
-          <motion.p
-            className="mb-8 text-lg"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            Find the perfect rental for your needs — whether it's a home, car, or tools for your next project.
-          </motion.p>
-        </div>
-      </section>
-
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-gradient-to-r from-gray-700 to-slate-500">
         <div className="container mx-auto text-center">
           <motion.h2
-            className="mb-8 text-4xl font-bold text-gray-800"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
+            className="mb-8 text-4xl font-bold text-white"
+            // initial={{ opacity: 0 }}
+            // whileInView={{ opacity: 1 }}
+            // transition={{ duration: 0.8 }}
           >
             Featured Rentals
           </motion.h2>
@@ -145,10 +145,10 @@ const HomePage = () => {
             ].map((service, index) => (
               <motion.div
                 key={index}
-                className="p-6 transition-shadow border rounded-lg shadow-md bg-gray-50 hover:shadow-lg"
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: index * 0.2 }}
+                className="p-6 transition-shadow border border-gray-600 rounded-lg shadow-md bg-gray-300 hover:shadow-lg"
+                // initial={{ opacity: 0, scale: 0.8 }}
+                // whileInView={{ opacity: 1, scale: 1 }}
+                // transition={{ duration: 0.6, delay: index * 0.2 }}
               >
                 <service.icon className="mx-auto mb-4 text-4xl text-yellow-500" />
                 <h3 className="text-xl font-semibold text-gray-800">{service.title}</h3>
@@ -156,42 +156,42 @@ const HomePage = () => {
               </motion.div>
             ))}
           </div>
-          <div className="mt-8">
+          <div className="my-8 mt-24">
             <Link
-              href="/rentals"
-              className="px-8 py-4 text-lg text-white transition bg-purple-600 rounded-md shadow-md hover:bg-purple-700"
+              href="/auth/login"
+              className="px-10 py-4 text-lg text-white transition  border border-purple-500 rounded-md shadow-md hover:bg-purple-500"
             >
-              View All Rentals
+              Create Rentals
             </Link>
           </div>
         </div>
       </section>
 
-      <section className="py-12 text-center text-white bg-gradient-to-r from-green-400 to-blue-500">
+      <section className="py-12 text-center text-white bg-gradient-to-r border-t-2 border-gray-500 from-gray-700 to-slate-500">
         <motion.h2
           className="mb-4 text-4xl font-bold"
-          initial={{ opacity: 0, scale: 0.8 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6 }}
+          // initial={{ opacity: 0, scale: 0.8 }}
+          // whileInView={{ opacity: 1, scale: 1 }}
+          // transition={{ duration: 0.6 }}
         >
           Ready to Find Your Next Rental?
         </motion.h2>
         <motion.p
           className="mb-6 text-lg"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          // initial={{ opacity: 0 }}
+          // whileInView={{ opacity: 1 }}
+          // transition={{ duration: 0.6, delay: 0.2 }}
         >
           Explore our diverse collection of rentals and book today.
         </motion.p>
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          transition={{ duration: 0.2, delay: 0.1 }}
         >
           <Link
-            href="/rentals"
-            className="px-10 py-4 text-lg transition bg-yellow-500 rounded-lg shadow-lg hover:bg-yellow-600"
+            href="/auth/login"
+            className="px-10 py-4 text-lg text-white transition  border border-purple-500 rounded-md shadow-md hover:bg-purple-500"
           >
             Get Started <FaArrowRight className="inline ml-2" />
           </Link>
@@ -244,9 +244,9 @@ const HomePage = () => {
               <motion.div
                 key={index}
                 className="p-6 transition-shadow bg-white border rounded-lg shadow-md hover:shadow-lg"
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: index * 0.2 }}
+                // initial={{ opacity: 0, scale: 0.8 }}
+                // whileInView={{ opacity: 1, scale: 1 }}
+                // transition={{ duration: 0.6, delay: index * 0.2 }}
               >
                 <item.icon className="mx-auto mb-4 text-4xl text-yellow-500" />
                 <h3 className="text-xl font-semibold text-gray-800">{item.title}</h3>
@@ -257,13 +257,13 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section className="py-16 text-white bg-gradient-to-r from-slate-400 to-purple-300">
+      <section className="py-16 text-white bg-gradient-to-r from-gray-700 to-slate-500">
         <div className="container mx-auto text-center">
           <motion.h2
             className="mb-8 text-4xl font-bold"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
+            // initial={{ opacity: 0 }}
+            // whileInView={{ opacity: 1 }}
+            // transition={{ duration: 0.8 }}
           >
             What Our Customers Say
           </motion.h2>
@@ -291,9 +291,9 @@ const HomePage = () => {
               <motion.div
                 key={index}
                 className="p-6 text-gray-800 bg-white rounded-lg shadow-md"
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.2 }}
+                // initial={{ opacity: 0, y: 50 }}
+                // whileInView={{ opacity: 1, y: 0 }}
+                // transition={{ duration: 0.6, delay: index * 0.2 }}
               >
                 <img
                   src={customer.image}
@@ -312,9 +312,9 @@ const HomePage = () => {
         <div className="container mx-auto text-center">
           <motion.h2
             className="mb-8 text-4xl font-bold text-gray-800"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
+            // initial={{ opacity: 0 }}
+            // whileInView={{ opacity: 1 }}
+            // transition={{ duration: 0.8 }}
           >
             How It Works
           </motion.h2>
@@ -344,9 +344,9 @@ const HomePage = () => {
               <motion.div
                 key={index}
                 className="p-6 transition-shadow rounded-lg shadow-md bg-gray-50 hover:shadow-lg"
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: index * 0.2 }}
+                // initial={{ opacity: 0, scale: 0.8 }}
+                // whileInView={{ opacity: 1, scale: 1 }}
+                // transition={{ duration: 0.6, delay: index * 0.2 }}
               >
                 <div className="mb-4 text-4xl font-bold text-yellow-500">{step.step}</div>
                 <h3 className="text-xl font-semibold text-gray-800">{step.title}</h3>

@@ -23,7 +23,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex bg-gradient-to-r from-gray-700 to-slate-500 flex-col`}
       >
         {/* <ClientSessionProvider> */}
         <AuthProviderCom>

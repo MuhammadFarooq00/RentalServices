@@ -78,10 +78,10 @@ export default function SeoServices() {
                 </p>
                 <div className="space-y-4">
                     <a
-                        href="mailto:your-email@example.com"
+                        href="mailto:ilyas.sollutions@gmail.com"
                         className="block text-lg text-blue-600 hover:underline"
                     >
-                        📧 Send us an email: your-email@example.com
+                        📧 Send us an email: ilyas.sollutions@gmail.com
                     </a>
                     <a
                         href="tel:+1234567890"

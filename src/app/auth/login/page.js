@@ -90,7 +90,7 @@ export default function LoginPage() {
             </div>
 
             {/* Google Login Button */}
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <button
                 type="button"
                 onClick={()=>login()}
@@ -99,7 +99,7 @@ export default function LoginPage() {
                 <FaGoogle className="mr-2 text-white" size={20} />
                 Login with Google
               </button>
-            </div>
+            </div> */}
 
             {/* Submit Button */}
             <button
