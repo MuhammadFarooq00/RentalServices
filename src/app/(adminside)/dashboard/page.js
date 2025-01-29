@@ -216,10 +216,27 @@ export default function DashboardPage() {
 
   const handleUpdate = async () => {
     try {
-      const response = await axios.put(`/api/rental?id=${selectedRental._id}`, updatedRental);
+      const formData = new FormData();
+      
+      // Append form fields
+      Object.keys(updatedRental).forEach((key) => {
+        formData.append(key, updatedRental[key]);
+      });
+  
+      // If updating an image, ensure it's correctly appended
+      if (updatedRental.photo) {
+        formData.append("photo", updatedRental.photo);
+      }
+  
+      const response = await axios.put(`/api/rental?id=${selectedRental._id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+  
       if (response.data.success) {
         setRentals(rentals.map(rental => 
-          rental._id === selectedRental._id ? {...rental, ...updatedRental} : rental
+          rental._id === selectedRental._id ? { ...rental, ...updatedRental } : rental
         ));
         setEditModalOpen(false);
         toast.success('Rental updated successfully');
@@ -229,6 +246,7 @@ export default function DashboardPage() {
       toast.error(error.response?.data?.message || 'Failed to update rental');
     }
   };
+  
 
   const handleDelete = async () => {
     try {
@@ -356,9 +374,9 @@ export default function DashboardPage() {
     setCurrentPage(page);
   };
 
-  useEffect(() => {
-    fetchContacts();
-  }, [currentPage,rerender]);
+  // useEffect(() => {
+  //   fetchContacts();
+  // }, [currentPage,rerender]);
 
 
   if (isCheckingAuth) {
