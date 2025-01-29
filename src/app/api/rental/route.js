@@ -77,11 +77,7 @@ const uploadDirectory = path.join(process.cwd(), "public/uploads");
 //   }
 // }
 
-import fs from "fs/promises";
-import path from "path";
-import { v4 as uuid } from "uuid";
-import connectDB from "@/lib/db"; // Adjust path based on your project structure
-import RentalService from "@/models/RentalService"; // Adjust import as needed
+
 
 export async function POST(req) {
   await connectDB();
