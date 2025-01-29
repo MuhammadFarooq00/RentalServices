@@ -188,24 +188,25 @@ export async function DELETE(request) {
       );
     }
 
+    console.log( " rental image ", rental.image)
+
     // Delete associated images from uploads folder
-    if (rental.images && rental.images.length > 0) {
+    if (rental.image) {
       const fs = require('fs').promises;
       const path = require('path');
 
-      for (const imageUrl of rental.images) {
-        try {
-          // Extract filename from URL or path
-          const filename = imageUrl.split('/').pop();
-          const imagePath = path.join(process.cwd(), 'public/uploads', filename);
-          
-          // Delete the file
-          await fs.unlink(imagePath);
-        } catch (err) {
-          console.error(`Failed to delete image file: ${err.message}`);
+      try {
+        // Extract filename from URL or path
+        const filename = rental.image;
+        const imagePath = path.join(process.cwd(), '/public', filename);
+        console.log("file path check : ", imagePath)
+        // Delete the file
+        await fs.unlink(imagePath);
+      } catch (err) {
+        console.error(`Failed to delete image file: ${err.message}`);
           // Continue with deletion even if image removal fails
         }
-      }
+      
     }
 
     // Delete the rental from database
