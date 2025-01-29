@@ -6,10 +6,82 @@ import path from 'path';
 
 const uploadDirectory = path.join(process.cwd(), "public/uploads");
 
-if (!fs.existsSync(uploadDirectory)) {
-  fs.mkdirSync(uploadDirectory, { recursive: true });
-}
+// if (!fs.existsSync(uploadDirectory)) {
+//   fs.mkdirSync(uploadDirectory, { recursive: true });
+// }
 
+
+// export async function POST(req) {
+//   await connectDB();
+
+//   try {
+//     const formData = await req.formData();
+//     const photoFile = formData.get("photo");
+    
+//     if (!photoFile) {
+//       return new Response(
+//         JSON.stringify({ success: false, message: "Please add an image" }),
+//         { status: 400, headers: { "Content-Type": "application/json" } }
+//       );
+//     }
+
+//     const photoBuffer = Buffer.from(await photoFile.arrayBuffer());
+//     const photoFilename = `${uuid()}${path.extname(photoFile.name)}`;
+//     const photoPath = path.join(uploadDirectory, photoFilename);
+
+//     fs.writeFileSync(photoPath, photoBuffer);
+
+//     const userId = formData.get("userId"); // Get user ID from form data
+//     const title = formData.get("title");
+//     const price = formData.get("price");
+//     const description = formData.get("description");
+//     const rating = formData.get("rating");
+//     const location = formData.get("location");
+
+//     if (!userId || !title || !price || !description || !rating || !location) {
+//       if (fs.existsSync(photoPath)) {
+//         fs.unlinkSync(photoPath);
+//       }
+//       return new Response(
+//         JSON.stringify({ success: false, message: "Please fill all the fields" }),
+//         { status: 400, headers: { "Content-Type": "application/json" } }
+//       );
+//     }
+
+//     const newRental = new RentalService({
+//       user: userId,
+//       title,
+//       price,
+//       description,
+//       rating,
+//       location,
+//       image: `/uploads/${photoFilename}`
+//     });
+
+//     await newRental.save();
+
+//     return new Response(
+//       JSON.stringify({
+//         success: true,
+//         message: "Product successfully added",
+//       }),
+//       { status: 201, headers: { "Content-Type": "application/json" } }
+//     );
+
+//   } catch (error) {
+//     console.error(error);
+//     return new Response(
+//       JSON.stringify({ error: "Failed to create rental", details: error.message }),
+//       { status: 500, headers: { "Content-Type": "application/json" } }
+//     );
+//   }
+// }
+
+import fs from "fs/promises";
+import path from "path";
+import { v4 as uuid } from "uuid";
+import connectDB from "@/lib/db"; // Adjust path based on your project structure
+import RentalService from "@/models/RentalService"; // Adjust import as needed
 
 export async function POST(req) {
   await connectDB();
@@ -17,7 +89,7 @@ export async function POST(req) {
   try {
     const formData = await req.formData();
     const photoFile = formData.get("photo");
-    
+
     if (!photoFile) {
       return new Response(
         JSON.stringify({ success: false, message: "Please add an image" }),
@@ -25,13 +97,17 @@ export async function POST(req) {
       );
     }
 
+    // Convert image to buffer
     const photoBuffer = Buffer.from(await photoFile.arrayBuffer());
     const photoFilename = `${uuid()}${path.extname(photoFile.name)}`;
-    const photoPath = path.join(uploadDirectory, photoFilename);
+    const tempUploadDir = "/tmp"; // ✅ Allowed writable directory on Vercel
+    const photoPath = path.join(tempUploadDir, photoFilename);
 
-    fs.writeFileSync(photoPath, photoBuffer);
+    // Save the image temporarily
+    await fs.writeFile(photoPath, photoBuffer);
 
-    const userId = formData.get("userId"); // Get user ID from form data
+    // Get other fields
+    const userId = formData.get("userId");
     const title = formData.get("title");
     const price = formData.get("price");
     const description = formData.get("description");
@@ -39,15 +115,15 @@ export async function POST(req) {
     const location = formData.get("location");
 
     if (!userId || !title || !price || !description || !rating || !location) {
-      if (fs.existsSync(photoPath)) {
-        fs.unlinkSync(photoPath);
-      }
+      // Delete the image if fields are missing
+      await fs.unlink(photoPath);
       return new Response(
         JSON.stringify({ success: false, message: "Please fill all the fields" }),
         { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
+    // Store the rental service with the image path
     const newRental = new RentalService({
       user: userId,
       title,
@@ -55,7 +131,7 @@ export async function POST(req) {
       description,
       rating,
       location,
-      image: `/uploads/${photoFilename}`
+      image: `/tmp/${photoFilename}`, // ✅ Correct image path
     });
 
     await newRental.save();
@@ -64,6 +140,7 @@ export async function POST(req) {
       JSON.stringify({
         success: true,
         message: "Product successfully added",
+        imageUrl: `/tmp/${photoFilename}`, // ✅ Return correct image URL
       }),
       { status: 201, headers: { "Content-Type": "application/json" } }
     );
@@ -76,7 +153,6 @@ export async function POST(req) {
     );
   }
 }
-
 
 
 export const config = {
