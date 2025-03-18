@@ -62,7 +62,7 @@ const HomePage = () => {
    
     <div>
       
-    <section className="relative px-6 py-32 text-white bg-gradient-to-r from-gray-700 to-slate-500">
+    <section className="relative px-6 py-32 text-black ">
         <div className="container mx-auto text-center">
           <motion.h1
             className="mb-6 text-5xl font-extrabold"
@@ -84,7 +84,7 @@ const HomePage = () => {
       </section>
 
 
-      <section className="py-12  border-t-2 border-gray-700 bg-gradient-to-r from-gray-700 to-slate-500">
+      <section className="pb-12 pt-6 ">
         <div className="container mx-auto">
           <motion.div
             className="relative overflow-hidden rounded-lg shadow-md"
@@ -124,10 +124,10 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section className="py-16 bg-gradient-to-r from-gray-700 to-slate-500">
-        <div className="container mx-auto text-center">
+      <section className="py-16 ">
+        <div className="container text-black mx-auto text-center">
           <motion.h2
-            className="mb-8 text-4xl font-bold text-white"
+            className="mb-8 text-4xl font-bold text-black"
             // initial={{ opacity: 0 }}
             // whileInView={{ opacity: 1 }}
             // transition={{ duration: 0.8 }}
@@ -145,7 +145,7 @@ const HomePage = () => {
             ].map((service, index) => (
               <motion.div
                 key={index}
-                className="p-6 transition-shadow border border-gray-600 rounded-lg shadow-md bg-gray-300 hover:shadow-lg"
+                className="p-6 transition-shadow  rounded-lg shadow-md bg-gray-50 hover:shadow-lg"
                 // initial={{ opacity: 0, scale: 0.8 }}
                 // whileInView={{ opacity: 1, scale: 1 }}
                 // transition={{ duration: 0.6, delay: index * 0.2 }}
@@ -159,7 +159,7 @@ const HomePage = () => {
           <div className="my-8 mt-24">
             <Link
               href="/auth/login"
-              className="px-10 py-4 text-lg text-white transition  border border-purple-500 rounded-md shadow-md hover:bg-purple-500"
+              className="px-10 py-4 text-lg text-black transition  border border-gray-800 rounded-md shadow-md hover:bg-gray-600 hover:text-white"
             >
               Create Rentals
             </Link>
@@ -167,7 +167,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section className="py-12 text-center text-white bg-gradient-to-r border-t-2 border-gray-500 from-gray-700 to-slate-500">
+      <section className="py-12 text-center text-black">
         <motion.h2
           className="mb-4 text-4xl font-bold"
           // initial={{ opacity: 0, scale: 0.8 }}
@@ -191,7 +191,7 @@ const HomePage = () => {
         >
           <Link
             href="/auth/login"
-            className="px-10 py-4 text-lg text-white transition  border border-purple-500 rounded-md shadow-md hover:bg-purple-500"
+            className="px-10 py-4 text-lg text-black transition  border border-gray-800 rounded-md shadow-md hover:bg-gray-600 hover:text-white"
           >
             Get Started <FaArrowRight className="inline ml-2" />
           </Link>

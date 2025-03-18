@@ -60,14 +60,14 @@ const Header = () => {
             href="/webservices"
             className="flex items-center transition duration-300 hover:text-yellow-400"
           >
-            <SiWebtrees className="mr-2" /> Web Services
+            <SiWebtrees className="mr-2" /> Social Services
           </Link>
-          <Link
+          {/* <Link
             href="/seoservices"
             className="flex items-center transition duration-300 hover:text-yellow-400"
           >
             <TbSeo className="w-6 h-8 mr-2 " /> Seo Services
-          </Link>
+          </Link> */}
           <Link
             href="/contactus"
             className="flex items-center transition duration-300 hover:text-yellow-800"
@@ -179,15 +179,15 @@ const Header = () => {
              onClick={closeMenu}
             className="flex items-center py-2 transition duration-300 bg-gray-700 rounded-md ps-6 hover:bg-gray-900 hover:text-yellow-400"
           >
-            <SiWebtrees className="mr-2" /> Web Services
+            <SiWebtrees className="mr-2" /> Social Services
           </Link>
-          <Link
+          {/* <Link
             href="/seoservices"
              onClick={closeMenu}
             className="flex items-center py-2 transition duration-300 bg-gray-700 rounded-md ps-6 hover:bg-gray-900 hover:text-yellow-400"
           >
             <TbSeo className="w-6 h-8 mr-2 " /> Seo Services
-          </Link>
+          </Link> */}
           {
             UserData && (
               <Link

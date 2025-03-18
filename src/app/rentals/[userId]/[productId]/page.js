@@ -27,6 +27,7 @@ export default function RentalDetails({ params }) {
       try {
         setIsLoading(true);
         const response = await axios.get(`/api/rental/${userId}/${productId}`);
+        console.log('response:', response.data);
         if (response.data.success) {
           setRental({
             ...response.data.rental,
@@ -93,8 +94,10 @@ export default function RentalDetails({ params }) {
     try {
       const response = await axios.post('/api/booking', {
         rentalId: productId,
+        userId: userId,
         ...bookingData
       });
+      console.log('Booking response:', response.data);
       
       if (response.data.success) {
         toast.success('Booking confirmed successfully!');

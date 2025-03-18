@@ -49,6 +49,11 @@ const BookingSchema = new mongoose.Schema({
     required: [true, 'Product is required'],
     trim: true
   },
+  userId: {
+    type: String,
+    required: [true, 'User ID is required'],
+    trim: true
+  },
   delivery: {
     type: String,
     required: [true, 'Delivery option is required'],

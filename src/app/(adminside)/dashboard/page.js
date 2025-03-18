@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { FaEdit, FaTrashAlt, FaPlus, FaEye, FaUser, FaEnvelope, FaPhone, FaComment, FaCheckCircle, FaCog, FaSearch, FaBox } from 'react-icons/fa';
+import { FaEdit, FaTrashAlt, FaPlus, FaEye, FaUser, FaEnvelope, FaPhone, FaComment, FaCheckCircle, FaCog, FaSearch, FaBox, FaArrowLeft } from 'react-icons/fa';
 import Link from 'next/link';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -108,8 +108,9 @@ export default function DashboardPage() {
         ? `/api/booking?${query}`
         : '/api/booking';
       const response = await axios.get(url);
-      setBookings(response?.data);
-      console.log(response?.data);
+      const filteredData = response?.data?.data?.filter((val)=> val.userId === UserData?.user?.id);
+      setBookings(filteredData);
+      console.log("iss hasdf hh :",filteredData);
       setIsBookingLoading(false);
     } catch (error) {
       console.error('Error fetching bookings:', error);
@@ -400,8 +401,8 @@ export default function DashboardPage() {
         {/* Main content */}
         <div className="relative z-10">
           
-        <Link href="/" className="px-4 py-2 absolute left- 0 text-white  border-2 border-yellow-600 rounded-md shadow-md  transition-all duration-300">
-              Back to Home
+        <Link href="/" className="px-2 py-2 absolute -left-4 -top-8 sm:-top-0 md:-top-0 flex items-center justify-center text-white  border-2 border-yellow-600 rounded-full shadow-md  transition-all duration-300">
+              <FaArrowLeft className="" />
           </Link>
 
           <div className="flex items-center justify-center gap-2 sm:gap-4 group cursor-pointer">
@@ -802,7 +803,7 @@ export default function DashboardPage() {
                   <span className="text-gray-400 text-sm font-medium">Total Bookings</span>
                   <div className="flex items-center gap-2">
                     <span className="text-3xl font-bold bg-gradient-to-r from-yellow-200 to-yellow-500 bg-clip-text text-transparent">
-                      {bookings?.data?.length || 0}
+                      {bookings?.length || 0}
                     </span>
                     <svg className="w-5 h-5 text-yellow-500 animate-bounce" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
@@ -882,7 +883,7 @@ export default function DashboardPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-700">
-                  {bookings?.data?.length > 0 && bookings.data.map((booking) => (
+                  {bookings?.length > 0 && bookings.map((booking) => (
                     <tr key={booking._id} className="text-gray-300 hover:bg-white/5 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">{booking.name}</td>
                       <td className="px-6 py-4 whitespace-nowrap">{booking.email}</td>
