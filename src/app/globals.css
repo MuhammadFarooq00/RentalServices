@@ -44,3 +44,76 @@ body {
 .modal-content::-webkit-scrollbar-button {
   display: none;
 }
+
+
+
+
+/* Container for animations */
+.absolute {
+  position: absolute;
+}
+
+.inset-0 {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.pointer-events-none {
+  pointer-events: none;
+}
+
+/* Car Animation */
+.car-animation {
+  animation: floatCar 8s infinite ease-in-out;
+}
+
+@keyframes floatCar {
+  0%, 100% {
+    transform: translateX(-100%) translateY(0);
+  }
+  50% {
+    transform: translateX(100%) translateY(-20px);
+  }
+}
+
+/* House Animation */
+.house-animation {
+  animation: floatHouse 6s infinite ease-in-out;
+}
+
+@keyframes floatHouse {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+/* Calendar Animation */
+.calendar-animation {
+  animation: floatCalendar 5s infinite ease-in-out;
+}
+
+@keyframes floatCalendar {
+  0%, 100% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(-20px) translateY(-20px);
+  }
+}
+
+/* Workflow Lines Animation */
+.workflow-line {
+  stroke-dashoffset: 1000;
+  animation: draw 10s infinite linear;
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}

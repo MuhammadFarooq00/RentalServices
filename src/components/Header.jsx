@@ -15,8 +15,10 @@ import {
   FaUserAlt,
 } from "react-icons/fa"; // Importing icons
 import { useAuth } from "@/app/context/AuthContext";
-
+// import logo from '/public/favicon.png';
+import Image from 'next/image';
 const Header = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user:UserData} = useAuth();
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
@@ -33,6 +35,7 @@ const Header = () => {
             href="/"
             className="text-2xl font-bold transition duration-300 hover:text-yellow-500"
           >
+            {/* <Image src={logo} alt="Logo" width={32} height={32} />  */}
             Rental Services
           </Link>
         </div>
@@ -161,7 +164,7 @@ const Header = () => {
             <FaInfoCircle className="mr-2" /> About
           </Link>
           <Link
-            href="/rentals"
+            href={`/rentals/${UserData?.user?.id}`}
             onClick={closeMenu}
             className="flex items-center py-2 transition duration-300 bg-gray-700 rounded-md ps-6 hover:bg-gray-900 hover:text-yellow-400"
           >
@@ -206,7 +209,7 @@ const Header = () => {
              <button
             onClick={()=>{
               localStorage.clear();
-              navigate("/login");
+              navigate("/auth/login");
               closeMenu();
             }}
             className="flex items-center w-full py-2 transition duration-300 bg-gray-700 rounded-md ps-6 hover:bg-gray-900 hover:text-yellow-400"

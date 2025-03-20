@@ -28,7 +28,7 @@ const HomePage = () => {
 
   const slides = [
     {
-      image: 'https://picsum.photos/id/1018/1200/600',
+      image: '/pic1.png',
       title: 'Luxury Apartments',
       description: 'Stay in style and comfort in our top-tier apartments.',
     },
@@ -37,8 +37,8 @@ const HomePage = () => {
       title: 'Modern Villas',
       description: 'Relax in our elegant and spacious modern villas.',
     },
-    {
-      image: 'https://picsum.photos/id/1020/1200/600',
+  {
+      image: 'pic1.png',
       title: 'Cozy Cottages',
       description: 'Enjoy a peaceful stay in our charming cottages.',
     },
@@ -70,7 +70,7 @@ const HomePage = () => {
             // animate={{ opacity: 1, y: 0 }}
             // transition={{ duration: 0.2 }}
           >
-            Welcome to Rental Services
+            MyRentalGo 
           </motion.h1>
           <motion.p
             className="mb-8 text-lg"
@@ -78,7 +78,7 @@ const HomePage = () => {
             // animate={{ opacity: 1, y: 0 }}
             // transition={{ duration: 0.2, delay: 0.1 }}
           >
-            Find the perfect rental for your needs — whether it's a home, car, or tools for your next project.
+           Simplify Your Rental Business with Seamless Booking Software
           </motion.p>
         </div>
       </section>

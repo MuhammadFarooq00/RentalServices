@@ -227,10 +227,10 @@ const AboutPage = () => {
             Welcome to Our Premium Rental Services
           </h2>
           <p className="text-xl text-gray-700 mb-6 max-w-3xl mx-auto leading-relaxed">
-            Discover the perfect rental for your needs. From luxurious apartments in vibrant cities to serene cottages for the ultimate weekend getaway, we offer a variety of properties. Whether you're planning a short-term retreat or a long-term stay, we ensure comfort, convenience, and all the amenities you require for a memorable experience.
+          MyRentalGo is an all-in-one booking software designed to streamline your rental business. Effortlessly manage reservations, track availability, and provide a seamless experience for your customers. Say goodbye to double bookings and missed opportunities—get started with MyRentalGo today!
           </p>
           <p className="text-xl text-gray-700 mb-6 max-w-3xl mx-auto leading-relaxed">
-            Our team is dedicated to maintaining properties that are safe, well-kept, and designed to offer a relaxing atmosphere. With seamless booking and around-the-clock support, we promise to make your stay smooth and enjoyable from start to finish. Let us help you find your perfect home away from home.
+          MyRentalGo is tailored for rental businesses seeking to optimize their operations. Whether you rent party equipment, trackless trains, inflatables, or event supplies, MyRentalGo simplifies booking management, customer communication, and payment processing. Our intuitive platform is mobile-friendly, secure, and customizable to fit your unique needs. Increase your efficiency, minimize errors, and focus on what matters most—growing your business!
           </p>
         </div>
       </motion.section>

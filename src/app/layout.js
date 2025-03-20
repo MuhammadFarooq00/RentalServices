@@ -16,6 +16,9 @@ const geistMono = localFont({
 });
 
 export const metadata = {
+  icons: {
+    icon: '/logo.png',
+  },
   title: 'Rental Services App',
   description: 'Modern and responsive rental services application.',
 };
@@ -23,7 +26,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex  flex-col`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex text-black bg-white flex-col`}
       >
         {/* <ClientSessionProvider> */}
         <AuthProviderCom>
